@@ -5,6 +5,11 @@
         root.Elliptical.Behaviors.Carousel=factory();
     }(this, function () {
 
+        var _indicatorNavSelector = 'carousel-navigation.indicators';
+        var _innerContainer = 'carousel-inner-container';
+        var _item = 'carousel-item';
+        var INTERVAL_PERIOD=250;
+
         return {
 
             /*==========================================
@@ -159,7 +164,7 @@
                 this._data.set('readyState',true);
                 this._initContainers();
                 this._initNav();
-                this._events();
+                this.__events();
             },
 
             /**
