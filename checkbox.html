@@ -26,6 +26,11 @@
                 };
                 this.element.trigger(eventType,data);
                 (checked) ? this.element.attr('checked','') : this.element.removeAttr('checked');
+            },
+
+            isChecked:function(){
+                var input=this.element.find('input');
+                return input.is(':checked');
             }
 
         };
