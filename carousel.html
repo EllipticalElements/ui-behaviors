@@ -22,7 +22,7 @@
             },
 
             _passVisibilityCheck:function(){
-                if(this.options.initOnVisibility) return this._isVisible();
+                if(this.initOnVisibility) return this._isVisible();
                 else return true;
             },
 
@@ -78,7 +78,7 @@
 
             _initializeDelay:function(){
                 var self=this;
-                var delay=this.options.renderDelay;
+                var delay=this.renderDelay;
                 setTimeout(function(){
                     self._initialize();
                 },delay);
@@ -103,7 +103,7 @@
                 this._data.set('iteration',0);
                 var currentSlide = this._data.get('currentSlide');
                 this._data.set('indicators',null);
-                if (this.options.indicators) {
+                if (this.indicators) {
                     this._initIndicatorNav();
                 }
             },
@@ -111,23 +111,23 @@
 
             _onInitialization: function () {
                 this._setDuration();
-                var animation = this.options.animation;
+                var animation = this.animation;
                 if (animation === 'fade') {
                     this._readyState();
-                    if (this._isPhone() && this.options.showOnLoad) {
-                        var slideIndex_ = parseInt(this.options.showOnLoad);
+                    if (this._isPhone() && this.showOnLoad) {
+                        var slideIndex_ = parseInt(this.showOnLoad);
                         this._FadeSlide(slideIndex_);
                     } else {
-                        if (this.options.auto) this._initAutoInterval();
+                        if (this.auto) this._initAutoInterval();
                     }
 
                 } else {
                     /* multi-slide or slide transition */
-                    if (!this._mq.touch && this.options.hardwareAcceleration) {
+                    if (!this._mq.touch && this.hardwareAcceleration) {
                         var body = $('body');
                         this._setHardwareAcceleration(body);
                     }
-                    if (this.options.preload === true) this._preloadImages(this.element, this._onPreload.bind(this));
+                    if (this.preload === true) this._preloadImages(this.element, this._onPreload.bind(this));
                     else this._onPreload(null, null);
                 }
 
@@ -142,8 +142,8 @@
              */
             _onPreload: function (err, data) {
                 this._readyState();
-                var animation = this.options.animation;
-                var auto = this.options.auto;
+                var animation = this.animation;
+                var auto = this.auto;
                 if (animation === 'multi-slide') this._initMultiSlide();
                 else if (animation === 'slide') this._initSlide();
                 this._setInnerContainerVisibility();
@@ -176,7 +176,7 @@
                 var self = this;
                 setTimeout(function () {
                     self._autoFadeSlide();
-                }, self.options.initInterval);
+                }, self.initInterval);
             },
 
             /**
@@ -184,7 +184,7 @@
              * @private
              */
             _initAutoSlideInterval: function () {
-                var MAX_COUNT=this.options.maxIntervals;
+                var MAX_COUNT=this.maxIntervals;
                 var count=0;
                 var self = this;
                 var intervalId = setInterval(function () {
@@ -195,7 +195,7 @@
                         count++;
                         if(count > MAX_COUNT)clearInterval(intervalId);
                     }
-                }, self.options.autoInterval);
+                }, self.autoInterval);
             },
 
             /**
@@ -306,8 +306,8 @@
 
                     this._transition(ele, {
                         'margin-left': marginLeft,
-                        duration: this.options.duration,
-                        easing: this.options.easing
+                        duration: this.duration,
+                        easing: this.easing
                     }, function () {
 
                         /* remove any disabled css markup from nav */
@@ -355,8 +355,8 @@
                     this._onEventTrigger('sliding', evtData);
                     this._transition(ele, {
                         'margin-left': marginLeft,
-                        duration: this.options.duration,
-                        easing: this.options.easing
+                        duration: this.duration,
+                        easing: this.easing
                     }, function () {
                         /* remove any disabled css markup from nav */
                         var prevNav=self._data.get('prevNav');
@@ -397,8 +397,8 @@
                     slideIndex: slideIndex
                 };
 
-                var duration = this.options.duration;
-                var crossFade = this.options.crossFade;
+                var duration = this.duration;
+                var crossFade = this.crossFade;
                 this._data.set('currentSlide',nextSlide);
                 this._data.set('iteration',slideIndex);
 
@@ -442,10 +442,10 @@
              * @private
              */
             _autoFadeSlide: function () {
-                var MAX_COUNT=this.options.maxIntervals;
+                var MAX_COUNT=this.maxIntervals;
                 var count=0;
                 //abort if nav has been manually invoked
-                if (!this.options.auto) return false;
+                if (!this.auto) return false;
                 var iteration = this._data.get('iteration');
                 iteration = (iteration < this._data.get('size') - 1) ? (iteration + 1) : 0;
                 this._updateIndicatorNav(iteration);
@@ -458,7 +458,7 @@
                         count++;
                         if(count > MAX_COUNT) clearInterval(intervalId);
                     }
-                }, self.options.autoInterval);
+                }, self.autoInterval);
 
             },
 
@@ -476,16 +476,16 @@
              * @private
              */
             _setDuration: function () {
-                var animation = this.options.animation;
+                var animation = this.animation;
                 if (animation === 'fade') {
-                    if (this._device.touch) this.options.duration = this.options.touchFadeDuration;
-                    else this.options.duration = this.options.desktopFadeDuration;
-                    if (!this.options.autoInterval) this.options.autoInterval = this._data.get('fadeAutoInterval');
+                    if (this._device.touch) this.duration = this.touchFadeDuration;
+                    else this.duration = this.desktopFadeDuration;
+                    if (!this.autoInterval) this.autoInterval = this._data.get('fadeAutoInterval');
 
                 } else {
-                    if (!this.options.autoInterval) this.options.autoInterval = this._data.get('autoInterval');
-                    if (this._device.touch) this.options.duration = this.options.touchDuration;
-                    else this.options.duration = this.options.desktopDuration;
+                    if (!this.autoInterval) this.autoInterval = this._data.get('autoInterval');
+                    if (this._device.touch) this.duration = this.touchDuration;
+                    else this.duration = this.desktopDuration;
                 }
             },
 
@@ -543,7 +543,7 @@
              * @private
              */
             _initNav: function () {
-                var animation=this.options.animation;
+                var animation=this.animation;
                 if(animation==='multi-slide') this._initMultiSlideNav();
                 else this.__initNav();
 
@@ -551,8 +551,8 @@
 
             __initNav:function(){
                 var outerContainer = this.element;
-                var next = outerContainer.find(this.options.nextNavSelector);
-                var prev = outerContainer.find(this.options.prevNavSelector);
+                var next = outerContainer.find(this.nextNavSelector);
+                var prev = outerContainer.find(this.prevNavSelector);
                 this._showNav(next);
                 this._showNav(prev);
                 this._data.set('nextNav',next);
@@ -561,8 +561,8 @@
 
             _initMultiSlideNav:function(){
                 var outerContainer = this.element;
-                var next = outerContainer.find(this.options.nextNavSelector);
-                var prev = outerContainer.find(this.options.prevNavSelector);
+                var next = outerContainer.find(this.nextNavSelector);
+                var prev = outerContainer.find(this.prevNavSelector);
                 if(this._enableNextNav()) this._showNav(next);
                 this._data.set('nextNav',next);
                 this._data.set('prevNav',prev);
@@ -627,7 +627,7 @@
              * @private
              */
             _slideDistanceFactor: function (child) {
-                var distance=this.options.slideDistance;
+                var distance=this.slideDistance;
                 if (distance) return distance;
                 else {
                     var ele = this.element;
@@ -648,15 +648,13 @@
              * @private
              */
             _onSelected: function (index, item) {
-                var __customElements = this.options.$customElements;
-                var url = (!__customElements) ? 'data-url' : 'url';
+                var url =  'url';
                 var evtData = {
                     index: index,
                     url: item.attr(url),
                     target: item
                 };
                 this._onEventTrigger('selected', evtData);
-
             },
 
 
@@ -665,11 +663,11 @@
              * @private
              */
             _onNext: function (index) {
-                var animation = this.options.animation;
+                var animation = this.animation;
                 var iteration=index;
                 if (this._data.get('readyState')) {
                     this._clearTimeout();
-                    this.options.auto = false;
+                    this.auto = false;
                     if (animation === 'fade') {  /* fade */
                         if(iteration===undefined){
                             iteration= this._data.get('iteration');
@@ -692,11 +690,11 @@
              * @private
              */
             _onPrev: function (index) {
-                var animation = this.options.animation;
+                var animation = this.animation;
                 var iteration = index;
                 if (this._data.get('readyState')) {
                     this._clearTimeout();
-                    this.options.auto = false;
+                    this.auto = false;
                     if (animation === 'fade') {  /* fade */
                         if (iteration === undefined) {
                             iteration = this._data.get('iteration');
@@ -738,7 +736,6 @@
              * @private
              */
             _disableNav: function () {
-
                 var next = this._data.get('nextNav');
                 var prev = this._data.get('prevNav');
                 next.hide();
@@ -751,18 +748,18 @@
              * @private
              */
             _onSlide: function (index) {
-                var animation = this.options.animation;
+                var animation = this.animation;
                 if (animation === 'fade') {  /* fade */
                     if (index < 0) index = 0;
                     if (index > this._data.size - 1) index = this._data.size - 1;
                     this._clearTimeout();
-                    this.options.auto = false;
+                    this.auto = false;
                     this._FadeSlide(index);
                 }
             },
 
             _onOrientationChange: function () {
-                var animation = this.options.animation;
+                var animation = this.animation;
                 if (animation === 'slide') {
                     this._data.set('iteration',0);
                     this.element.css({ 'margin-left': 0 });

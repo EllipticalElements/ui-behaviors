@@ -1,12 +1,12 @@
 {
   "name": "ui-behaviors",
   "description": "ui web component mixins",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "author": "S. Francis",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ellipticaljs/ui-behaviors.git"
+    "url": "https://github.com/EllipticalElements/ui-behaviors.git"
   },
   "devDependencies": {
     "gulp": "^3.8.7",
