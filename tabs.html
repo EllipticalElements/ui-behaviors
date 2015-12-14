@@ -71,10 +71,10 @@
              */
             _setStyles: function () {
                 var border, borderTop, flex, borderLeft;
-                border = this.options.border;
-                borderTop = this.options.borderTop;
-                borderLeft = this.options.borderLeft;
-                flex = this.options.flex;
+                border = this.border;
+                borderTop = this.borderTop;
+                borderLeft = this.borderLeft;
+                flex = this.flex;
                 var tabsElement = this._data.get('tabsElement');
                 var contentSection = this.element.find('content-items');
                 /* reset */
@@ -203,7 +203,7 @@
              */
             _showSection: function (tab, dataId) {
                 var section;
-                var animate = this.options.animate;
+                var animate = this.animate;
                 if (typeof dataId != 'undefined') {
                     /* get the section by the passed dataId */
                     section = this._getSectionByDataId(dataId);
@@ -249,7 +249,7 @@
                 section.show();
                 this._transitions(section, {
                     opacity: 1,
-                    duration: this.options.duration.toMillisecond()
+                    duration: this.duration.toMillisecond()
                 }, function () {
                     section.css({
                         opacity: 1
@@ -286,8 +286,8 @@
              * @private
              */
             _hideSection: function () {
-                if (!this.options.preventDefault) {
-                    if (this._data.get('sections') && this.options.autoHide) {
+                if (!this.preventDefault) {
+                    if (this._data.get('sections') && this.autoHide) {
                         var sections = this._data.get('sections').filter(":visible");
                         sections.removeClass('active');
                         sections.removeAttr('style');
@@ -487,10 +487,10 @@
              * @private
              */
             _minHeight: function () {
-                if (this.options.minHeight) {
+                if (this.minHeight) {
                     var content = this._data.get('contentSection');
                     content.css({
-                        'min-height': this.options.minHeight.toPixel()
+                        'min-height': this.minHeight.toPixel()
                     });
                 }
             },
