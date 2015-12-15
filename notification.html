@@ -11,24 +11,11 @@
              * @private
              */
             _initNotification:function () {
-                this._data.set('notificationSelector','[notify-id="' + this.uuid + '"]');
-                this._data.set('notificationElement','<ui-notification data-notify-id="' + this.uuid + '"></ui-notification>');
-                var notification=$(this._data.get('notificationSelector'));
-                if(!notification[0]){
-                    var element = this.element;
-                    var div=$(this._data.get('notificationElement'));
-                    div.addClass(this.cssClass);
-                    element.append(div);
-                    if(this.top){
-                        div.css({
-                            top:this.top
-                        })
-                    }
-                    this._data.set('element',div);
-                }
-                if(this.showOnInit){
-                    this._show(this._data.get('element'));
-                }
+                var notification=$('<ui-notification></ui-notification>');
+                var containerSelector=this.containerSelector;
+                var container=$(containerSelector);
+                container.append(notification);
+                this._data.set('element',notification);
             },
 
             /**
