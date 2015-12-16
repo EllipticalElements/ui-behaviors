@@ -21,6 +21,10 @@
              */
             _initWindow: function (element) {
                 element.attr({tabIndex: -1});
+                this._setButtonLabel();
+                this._setCancelLabel();
+                this._setOpts();
+                this._setTitle();
                 this._focusable(element);
                 this._bindClose();
 
@@ -218,7 +222,8 @@
              * @private
              */
             __events: function () {
-
+                if(!(this.disablePhone && this._device.smartphone)) this._listener();
+                this._listener();
                 var self=this;
                 /* click special event name */
                 var click=this._data.click;
@@ -241,6 +246,16 @@
                         self._onEventTrigger('action', eventData);
                     });
                 }
+            },
+
+            _listener:function(){
+                var click=this._data.click;
+                var id=this.id;
+                if(id===undefined) {
+                    console.log('warning: ui-window requires an id to display...exiting');
+                    return;
+                }
+                $(document).on(click,'[data-window="' + id + '"]',this._open.bind(this));
             },
 
 
@@ -269,10 +284,21 @@
              *
              * @private
              */
-            _setBtnActionText: function () {
+            _setButtonLabel: function () {
                 var ele = this.element;
-                var label = this.btnActionText;
+                var label = this.buttonLabel;
                 var btn = ele.find('footer > [data-action]');
+                btn.text(label);
+            },
+
+            /**
+             *
+             * @private
+             */
+            _setCancelLabel: function () {
+                var ele = this.element;
+                var label = this.cancelLabel;
+                var btn = ele.find('footer > [data-cancel]');
                 btn.text(label);
             },
 

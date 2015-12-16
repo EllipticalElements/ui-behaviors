@@ -1,7 +1,7 @@
 {
   "name": "ui-behaviors",
   "description": "ui web component mixins",
-  "version": "0.1.17",
+  "version": "0.1.18",
   "author": "S. Francis",
   "license": "MIT",
   "repository": {
