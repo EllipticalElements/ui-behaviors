@@ -215,6 +215,15 @@
                 mql.addListener(function () {
                     self._onMediaQuery('desktop',mql);
                 });
+
+                this._event(this.element,this._data.click,'[home]',this._onHomeClick.bind(this));
+            },
+
+            _onHomeClick:function(){
+                var homeUrl=this.homeUrl;
+                if(homeUrl){
+                    this._location(homeUrl);
+                }
             },
 
             /**
