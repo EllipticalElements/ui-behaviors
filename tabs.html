@@ -203,7 +203,7 @@
              */
             _showSection: function (tab, dataId) {
                 var section;
-                var animate = this.animate;
+                var animate = this.animateSections;
                 if (typeof dataId != 'undefined') {
                     /* get the section by the passed dataId */
                     section = this._getSectionByDataId(dataId);
@@ -605,7 +605,7 @@
 
                 this._event(tabs, click, function (event) {
                     event.preventDefault();
-                    if (self.options.stopPropagation) {
+                    if (self.stopPropagation) {
                         event.stopPropagation();
                     }
                     var tab = $(event.delegateTarget);
