@@ -186,6 +186,7 @@
 
                 var element = this.element;
                 var self = this;
+                if(this.autoClose) this._menuItemClicks();
                 if (this.element.find('ui-mega-dropdown')[0]) {
                     if (!this.hideOnBlur) {
                         this._data.set('focused', true);
@@ -217,6 +218,13 @@
                     self._resetFocused(event);
                 });
 
+            },
+
+            _menuItemClicks:function(){
+                var self=this;
+                this._event(this.element.find('ui-dropdown'), this._data.click,'menu-item>a', function (event) {
+                    self._hide();
+                });
             },
 
             _blurEvent: function(){
