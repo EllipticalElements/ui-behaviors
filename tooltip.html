@@ -537,7 +537,7 @@
             __events: function(){
                 var hover=this._data.hover;
                 var self=this;
-                var doc=this.element;
+                var doc=$(document);
                 this._event(doc,hover,'.ui-tooltip',function(event){
                     self._parseEvent(event);
                 });
@@ -547,8 +547,9 @@
             _removeToolTipListener:function(){
                 observer.connect();
                 var self=this;
-                $(document).on('OnDocumentRemovedMutation', function (event, removed) {
-                    self._removeTooltips(removed);
+                $(document).on('OnDocumentMutation', function (event, summary) {
+                    var removed=summary.removed;
+                    if(removed && removed.length > 0) self._removeTooltips(removed);
                 });
             },
 
@@ -561,12 +562,9 @@
             },
 
             _removeTooltips:function(removed){
-                if(typeof removed==='undefined'){
-                    $('.data-tooltip').remove();
-                }else{
-                    var elements=removed.find('.ui-tooltip');
-                    this.__removeTooltips(elements);
-                }
+                removed=$(removed);
+                var elements=removed.find('.ui-tooltip');
+                this.__removeTooltips(elements);
             },
 
             _clear:function(){
