@@ -196,6 +196,10 @@
                     self._onClick(event);
                 });
 
+                this._event(element.children('[dropdown]'), click, function (event) {
+                    self._onClick(event);
+                });
+
                 this._event(element,'keypress',function(event){
                     self._onKeyPress(event);
                 });
