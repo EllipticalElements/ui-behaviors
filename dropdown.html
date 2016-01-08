@@ -24,8 +24,10 @@
                 if(this._isDisabled()){
                     return;
                 }
+                this.element.addClass('open');
                 this._onEventTrigger('show', {});
                 dropdown.addClass('show');
+                this._triggered('open');
             },
 
             /**
@@ -41,8 +43,10 @@
                 if(focused && !force){
                     return;
                 }
+                this.element.removeClass('open');
                 this._onEventTrigger('hide', {});
                 dropdown.removeClass('show');
+                this._triggered('closed');
             },
 
 
@@ -79,34 +83,14 @@
                 }
             },
 
-            _combo:function(target){
-                if(target[0].nodeName==='A'){
-                    var li=target.parent('menu-item');
-                    if(!li.hasClass('active')){
-                        this._removeActiveClass();
-                        li.addClass('active');
-                        var text=target[0].innerHTML;
-                        this._setText(text);
-                        this._onEventTrigger('selected',this._eventData(target,li));
-                    }
-                }
-            },
-
-            _selected:function(target){
+            _triggered:function(state){
                 var dataId = 'data-id';
-                if(target[0].nodeName==='A' && !this.handleEvents){
-                    //deprecated
-                }else{
-                    this._onEventTrigger('selected',{
-                        id:target.attr(dataId),
-                        target:target
-                    });
-                }
-            },
-
-            _setText:function(text){
-                var span=this.element.find('span');
-                span.text(text);
+                var target=this.element;
+                this._onEventTrigger('selected',{
+                    id:target.attr(dataId),
+                    state:state,
+                    target:target[0]
+                });
             },
 
             _removeActiveClass:function(){
@@ -128,28 +112,15 @@
 
 
             _onClick:function(event){
-                var mode=this.mode;
-                if(mode==='combo'){
-                    this._combo($(event.target));
-                }else{
-                    this._selected($(event.target));
-                }
                 this._toggle();
             },
 
             _onKeyPress: function(event){
-                var mode=this.mode;
-                if(event.which===13){
-                    if(mode==='combo'){
-                        this._combo($(event.target));
-                    }else{
-                        this._selected($(event.target));
-                    }
-                    this._toggle();
-                }
+                this._toggle();
             },
 
             _onBlur:function(event){
+                if(this.disableBlur) return;
                 var element = this.element;
                 element.removeClass('ui-focus');
                 var self=this;
@@ -188,15 +159,11 @@
                 var self = this;
                 if(this.autoClose) this._menuItemClicks();
                 if (this.element.find('ui-mega-dropdown')[0]) {
-                    if (!this.hideOnBlur) {
+                    if (this.disableBlur) {
                         this._data.set('focused', true);
                     }
                 }
-                this._event(element.children('a'), click, function (event) {
-                    self._onClick(event);
-                });
-
-                this._event(element.children('[dropdown]'), click, function (event) {
+                this._event(element, click, function (event) {
                     self._onClick(event);
                 });
 
@@ -251,7 +218,6 @@
              *===========================================*/
 
             show: function () {
-
                 this._show();
             },
 
@@ -263,7 +229,6 @@
             },
 
             toggle: function () {
-
                 this._toggle();
             },
 
