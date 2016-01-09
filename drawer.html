@@ -121,8 +121,8 @@
                 //append overlay to container
                 var overlay = $('<ui-overlay></ui-overlay>');
                 overlay.css({
-                    background:'#fff',
-                    opacity:0
+                    background:this.overlayBackground,
+                    opacity:this.overlayOpacity
                 });
                 overlay.addClass('show');
                 container.append(overlay);
