@@ -45,19 +45,17 @@
                 element.html(this.message);
                 var newCssClass=this.cssClass;
                 var oldCssClass=this._data.get('cssClass');
-                if(newCssClass.toLowerCase()!==oldCssClass.toLowerCase()){
-                    /* remove previously added classes */
-                    element.removeClass(oldCssClass);
-                    element.addClass(newCssClass);
-                    this._data.set('cssClass',newCssClass);
-                }
+                 /* remove previously added classes */
+                element.removeClass(oldCssClass);
+                element.addClass(newCssClass);
+                this._data.set('cssClass',newCssClass);
                 element.addClass('visible');
                 this._data.set('isVisible',true);
                 /* if terminate, setTimeout to animateOut */
                 if(this.terminate){
                     setTimeout(function(){
                         self._animateOut(element);
-                    },self.options.terminateTimeout);
+                    },self.terminateTimeout);
                 }
             },
 
