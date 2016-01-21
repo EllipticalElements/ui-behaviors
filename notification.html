@@ -49,7 +49,7 @@
                 element.removeClass(oldCssClass);
                 element.addClass(newCssClass);
                 this._data.set('cssClass',newCssClass);
-                element.addClass('visible');
+                element.addClass('show');
                 this._data.set('isVisible',true);
                 /* if terminate, setTimeout to animateOut */
                 if(this.terminate){
@@ -80,7 +80,7 @@
                     opacity: 0,
                     duration:duration
                 },function(){
-                    element.removeClass('visible');
+                    element.removeClass('show');
                     element.removeAttr('style');
                 });
             },
