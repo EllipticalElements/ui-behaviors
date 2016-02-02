@@ -160,11 +160,13 @@
                 left=coords.left;
                 left=left + parseInt(dimensions.element.width);
                 left=left + parseInt(tipHeight) + this._padding(element);
-
+                left+=parseInt(this.leftPlacement);
+                
                 //top position of the tooltip(element top - 1/2 element height)
                 //coords.top=coords.top-50;
                 top=coords.top - parseInt(element.height()/2);
-
+                top+=parseInt(this.topPlacement);
+                
                 tooltip.css({
                     left:left.toFloatPixel(),
                     top:top.toFloatPixel()
@@ -218,10 +220,12 @@
                 left=coords.left;
                 left=left - parseInt(dimensions.tooltip.width);
                 left=left - parseInt(tipHeight) - this._padding(element);
-
+                left+=parseInt(this.leftPlacement);
+                
                 //top position of the tooltip(element top - 1/2 element height)
                 top=coords.top - parseInt(element.height()/2);
-
+                top+=parseInt(this.topPlacement);
+                
                 //set the tooltip positioning
                 tooltip.css({
                     left:left.toFloatPixel(),
@@ -276,6 +280,8 @@
 
                 //left position the tooltip
                 left=coords.left + parseInt(dimensions.element.width/2) - parseInt(dimensions.tooltip.width/2);
+                left+=parseInt(this.leftPlacement);
+                
                 //force coords.left if specified
                 if(typeof element.attr('data-left') !=='undefined'){
                     left=coords.left;
@@ -283,7 +289,7 @@
 
                 //top position of the tooltip
                 top=coords.top - dimensions.tooltip.height - tipHeight - this._padding(element);
-
+                top+=parseInt(this.topPlacement);
                 //set the tooltip positioning
                 tooltip.css({
                     left:left.toFloatPixel(),
@@ -337,10 +343,11 @@
                 left=left-parseInt(dimensions.tooltip.width/2);
                 left=left + parseInt(tipWidth/2);
                 left=left + parseInt(dimensions.element.width/2);
-
+                left+=parseInt(this.leftPlacement);
+                
                 //top position of the tooltip
                 top=coords.top + dimensions.element.height + tipHeight + this._padding(element);
-
+                top+=parseInt(this.topPlacement);
 
                 //set the tooltip positioning
                 tooltip.css({
@@ -481,7 +488,6 @@
                 var target = $(event.target);
                 if(event.type==='hoverout'){
                     //hide tooltip
-
                     this._parseHideRequest(target);
                 }else{
                     //show or create tooltip
@@ -555,8 +561,9 @@
 
             __removeTooltips:function(elements){
                 $.each(elements,function(i,obj){
-                    var attr=$(obj).data('tooltip-id');
-                    var tooltip=$('[data-tooltip="' + attr + '"]');
+                    var z=$(obj).data;
+                    var attr=$(obj).data('tooltip');
+                    var tooltip=$('.data-tooltip[data-id="' + attr + '"]');
                     tooltip.remove();
                 });
             },

@@ -403,7 +403,7 @@
                 this._data.set('iteration',slideIndex);
 
                 if (crossFade===true) {
-                    this._crossFadeTransition(currentSlide, nextSlide, duration, evtData);
+                     this._crossFadeTransition(currentSlide, nextSlide, duration, evtData);
                 } else {
                     this._fadeTransition(currentSlide, nextSlide, duration, evtData);
                 }
@@ -412,7 +412,7 @@
             _crossFadeTransition: function(currentSlide,nextSlide,duration,evtData){
                 this._transition(currentSlide, {
                     opacity: 0,
-                    duration: duration
+                    duration: duration-50
                 });
                 this._transition(nextSlide, {
                     opacity: 1,
