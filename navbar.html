@@ -41,7 +41,6 @@
                         self._hide();
                     });
                 }
-
             },
 
             /**
@@ -65,51 +64,6 @@
                         self._triggerEvent('hide', {});
                     });
                 }
-
-            },
-
-            /**
-             * private method for handling touch menu item touch/click
-             * @param {object} item
-             * @private
-             */
-            _onTouchMenuItemSelect: function (item) {
-                var handleTouchEvents=this.touchEvents;
-                var nodeName,a;
-                nodeName = item[0].nodeName.toLowerCase();
-                if (nodeName.toLowerCase() === 'menu-item-dropdown') {
-                    this._touchToggleDropdown(item);
-                }else if(nodeName.toLowerCase() === 'menu-item'){
-                    a=item.find('a');
-                    if(a[0]){
-                        this._touchMenuItem(a,handleTouchEvents);
-                    }
-                }else if(nodeName.toLowerCase() === 'a'){
-                    this._touchMenuLink(item,handleTouchEvents);
-                }
-            },
-
-            /**
-             *
-             * @param {object} item
-             * @private
-             */
-            _onMenuItemSelect: function (item) {
-                var handleEvents=this.events;
-                var a = item.find('a');
-                var href = a.attr('href');
-                var id = a.attr('data-id');
-                var action = a.attr('data-action');
-                if (typeof href != 'undefined' && href != '#' && handleEvents ) {
-                    this._location(href);
-                } else {
-                    var data = {
-                        id: id,
-                        action: action,
-                        mode: 'desktop'
-                    };
-                    this._triggerEvent('selected', data);
-                }
             },
 
 
@@ -122,10 +76,7 @@
                     var currHeight = this._device.viewport.height;
                     var height = this._data.get('height');
                     if (height != currHeight) {
-
-                        if (this._data.get('open')) {
-                            this._hide();
-                        }
+                        if (this._data.get('open')) this._hide();
                     }
                     this._data.set('height', currHeight);
                 }
@@ -168,34 +119,6 @@
                 }
             },
 
-            /**
-             *
-             * @param {object} event
-             * @param {string} tag
-             * @private
-             */
-            _onMenuEvent:function(event,tag){
-                event.preventDefault();
-                var item = $(event.delegateTarget);
-                var nodeName = item[0].nodeName.toLowerCase();
-                if (nodeName !== tag) {
-                    item = item.parent(tag);
-                }
-                this._onMenuItemSelect(item);
-            },
-
-            /**
-             *
-             * @param {object} event
-             * @param {string} tag
-             * @private
-             */
-            _onTouchMenuEvent:function(event,tag){
-                event.preventDefault();
-                var item = $(event.target);
-
-                this._onTouchMenuItemSelect(item);
-            },
 
             /**
              * element desktop events
@@ -215,42 +138,62 @@
                 mql.addListener(function () {
                     self._onMediaQuery('desktop',mql);
                 });
-
-                this._event(this.element,this._data.click,'[home]',this._onHomeClick.bind(this));
-            },
-
-            _onHomeClick:function(){
-                var homeUrl=this.homeUrl;
-                if(homeUrl){
-                    this._location(homeUrl);
-                }
             },
 
             /**
-             * menu events
+             *
+             * @param {object} event
+             * @param {string} tag
              * @private
              */
-            _menuEvents: function () {
-                if(!this.events){
-                    return;
-                }
-                var self = this;
-                var element=this.element;
-                var menuItem='ui-menu>menu-item';
-                var tag='menu-item';
-                var role='[role="menu"]';
-
-                var menuItem_ = element.find(menuItem)
-                        .add(element.find(role));
-
-                var press = this._data.press;
-
-                /* click special event name */
-                this._event(menuItem_,press,function(event){
-                    self._onMenuEvent(event,tag);
-                });
-
+            _onTouchMenuEvent:function(event,tag){
+                event.preventDefault();
+                var item = $(event.target);
+                this._onTouchMenuItemSelect(item);
             },
+
+            /**
+             * link element triggers location or a dev handled event
+             * @param a {object} link element
+             * @param handleTouchEvents {Boolean}
+             * @private
+             */
+            _touchMenuItem:function(a,handleTouchEvents){
+                var self=this;
+                var duration=(this.options) ? this.options.transformDuration : this.transformDuration;
+                duration+=100;
+                var href = a.attr('href');
+
+                /* close the drawer */
+                this._hide();
+
+                //if href, location redirect
+                if (typeof href != 'undefined' && href != '#') {
+                    /* trigger location after the drawer has closed */
+                    setTimeout(function(){
+                        self._location(href);
+                    },duration);
+                }
+            },
+
+
+            /**
+             * toggles touch sub-menu
+             * @param item {Object}
+             * @private
+             */
+            _touchToggleDropdown:function(item){
+                var selector=this.__dropdownSelector();
+                var dropdown=item.find(selector);
+                if (dropdown.hasClass('show')) {
+                    item.removeClass('close');
+                    dropdown.removeClass('show');
+                } else {
+                    item.addClass('close');
+                    dropdown.addClass('show');
+                }
+            },
+
 
             /**
              * element touch menu events
@@ -258,36 +201,19 @@
              */
             _touchMenuEvents: function () {
                 var self = this;
-
-                /* click special event name */
-                var click=this._data.click;
-
                 var drawer = this._data.get('drawer');
                 if (!drawer) {
                     return false;
                 }
+                var click=(this._device.touch) ? 'tap' : 'click';
+                this._event(drawer,click,'menu-item-dropdown:not(touch-ui-dropdown)',function(event){
+                    self._touchToggleDropdown($(event.target));
+                });
 
-                if(!this._device.touch){
-                    this._event(drawer,click,'touch-ui-menu>menu-item',function(event){
+                if(this.touchEvents){
+                    this._event(drawer,this._data.click,'touch-ui-menu>menu-item>a',function(event){
                         self._onTouchMenuEvent(event);
                     });
-                    this._event(drawer,click,'menu-item-dropdown',function(event){
-                        self._onTouchMenuEvent(event);
-                    });
-                }else{
-                    var touchMenu = $('touch-ui-menu');
-                    this._event(touchMenu, 'tap', 'a', function (event) {
-                        var a = $(event.currentTarget);
-                        self._touchMenuItem(a, true);
-                    });
-                    this._event(touchMenu, 'tap', 'menu-item-dropdown', function (event) {
-                        var item = $(event.target);
-                        if (item[0].tagName.toLowerCase()==='menu-item-dropdown') {
-                            self._touchToggleDropdown(item);
-                        }
-
-                    });
-
                 }
             },
 
@@ -322,11 +248,6 @@
                 }
 
                 this._unbindMQListeners();
-                var tap = this._data.tap;
-                var menuItem = this._data.get('menuItem');
-                if (menuItem) {
-                    menuItem.off(tap);
-                }
             },
 
 

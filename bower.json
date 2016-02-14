@@ -1,7 +1,7 @@
 {
   "name": "ui-behaviors",
   "description": "ui web component mixins",
-  "version": "0.1.30",
+  "version": "0.1.31",
   "main": "index.htm",
   "authors": [
     "S. Francis"

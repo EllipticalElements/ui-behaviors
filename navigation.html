@@ -338,79 +338,6 @@
                 return 'menu-item-dropdown';
             },
 
-            /**
-             * toggles touch sub-menu
-             * @param item {Object}
-             * @private
-             */
-            _touchToggleDropdown:function(item){
-                var selector=this.__dropdownSelector();
-                var dropdown=item.find(selector);
-                if (dropdown.hasClass('show')) {
-                    item.removeClass('close');
-                    dropdown.removeClass('show');
-                } else {
-                    item.addClass('close');
-                    dropdown.addClass('show');
-                }
-            },
-
-            /**
-             * link element triggers location or a dev handled event
-             * @param a {object} link element
-             * @param handleTouchEvents {Boolean}
-             * @private
-             */
-            _touchMenuItem:function(a,handleTouchEvents){
-                var self=this;
-                var duration=(this.options) ? this.options.transformDuration : this.transformDuration;
-                duration+=100;
-                var id = a.attr('data-id');
-                var href = a.attr('href');
-                var action = a.attr('data-action');
-                var route = a.attr('data-route');
-                if (route && route === 'false') {
-                    handleTouchEvents = true;
-                }
-                /* close the drawer */
-                this._hide();
-                if (typeof href != 'undefined' && href != '#' && (typeof action === 'undefined' && handleTouchEvents)) {
-                    ///if handleTouchEvents, use the injected location provider to dispatch href
-
-                    /* trigger location after the drawer has closed */
-                    setTimeout(function(){
-                        if(typeof href !=='undefined'){
-                            self._location(href);
-                        }
-                    },duration);
-                } else { //else, just fire an event
-                    var data = {
-                        id: id,
-                        action: action,
-                        mode: 'touch',
-                        href:href
-                    };
-                    this._onEventTrigger('selected', data);
-                }
-            },
-
-            /**
-             * currentTarget link element triggers submenu toggle or link element location/handled event
-             * @param a {Object}
-             * @param handleTouchEvents {Boolean}
-             * @private
-             */
-            _touchMenuLink:function(a,handleTouchEvents){
-                var href= a.attr('href');
-                if(typeof href==='undefined' || href==='#'){
-                    var item= a.parent('menu-item-dropdown');
-                    if(item[0]){
-                        this._touchToggleDropdown(item);
-                    }
-                }else{
-                    this._touchMenuItem(a,handleTouchEvents);
-                }
-            },
 
             /**
              * reset touch menu--hide dropdown and remove close arrow css
@@ -424,8 +351,6 @@
 
 
             _methods: {
-
-
                 /**
                  * returns menu item selector
                  * @returns {string}
@@ -652,7 +577,6 @@
             _unbindSearch: function (input) {
                 input.off('focus');
                 input.off('blur');
-
             },
 
 
@@ -660,10 +584,9 @@
              *
              * @private
              */
-            _onDestroy:function(){
+            _dispose:function(){
                 this._unbindSearch();
             }
-
 
         };
     }));
