@@ -61,7 +61,7 @@
             },
 
             _hasTemplate:function(){
-                var node=this.element[0];
+                var node=this;
                 return (node.hasAttribute('template'));
             },
 
@@ -403,7 +403,7 @@
                 this._data.set('iteration',slideIndex);
 
                 if (crossFade===true) {
-                     this._crossFadeTransition(currentSlide, nextSlide, duration, evtData);
+                    this._crossFadeTransition(currentSlide, nextSlide, duration, evtData);
                 } else {
                     this._fadeTransition(currentSlide, nextSlide, duration, evtData);
                 }
@@ -414,10 +414,14 @@
                     opacity: 0,
                     duration: duration-50
                 });
-                this._transition(nextSlide, {
-                    opacity: 1,
-                    duration: duration
-                });
+                var self=this;
+                setTimeout(function(){
+                    self._transition(nextSlide, {
+                        opacity: 1,
+                        duration: duration
+                    });
+                },10);
+
 
                 this._onEventTrigger('slide', evtData);
             },
@@ -456,7 +460,7 @@
                     self._autoFadeSlide();
                     if(MAX_COUNT){
                         count++;
-                        if(count > MAX_COUNT) clearInterval(intervalId);
+                        if(count > MAX_COUNT) clearTimeout(timeoutId);
                     }
                 }, self.autoInterval);
 
@@ -467,8 +471,12 @@
              * @private
              */
             _clearTimeout: function () {
-                if (this._data.get('timeoutId')) clearTimeout(this._data.get('timeoutId'));
-                else if(this._data.get('intervalId')) clearInterval(this._data.get('intervalId'));
+                var timeoutId=this._data.get('timeoutId');
+                var intervalId=this._data.get('intervalId');
+                this.auto=false;
+                if (timeoutId){
+                    clearTimeout(timeoutId);
+                } else if(intervalId) clearInterval(intervalId);
             },
 
             /**
