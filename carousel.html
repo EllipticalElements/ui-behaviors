@@ -49,7 +49,7 @@
             },
 
             _initCarousel:function(){
-                if(!this._data) this.destroy();
+                if(!this._data) this._destroy();
                 var hasTemplate=this._hasTemplate();
                 if(hasTemplate) this._initializeDelay();
                 else this._initialize();
@@ -509,7 +509,7 @@
                 var item = this.element.find(this._data.get('item') + ':' + child + '-child');
                 var offset = item.offset();
                 if(!offset){
-                    this.destroy();
+                    this._destroy();
                     return;
                 }
                 var innerContainerOffsetLeft=innerContainerOffset.left;
