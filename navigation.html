@@ -16,8 +16,11 @@
             _createTouchNavigation: function (element, dataClass) {
                 this._data.set('input',null);
                 this._data.set('touchInput',null);
-                this._createDrawer(element, dataClass);
-                this._createTouchMenu(element);
+                var self=this;
+                setTimeout(function(){
+                    self._createDrawer(element, dataClass);
+                    self._createTouchMenu(element);
+                },750);
             },
 
             /**
