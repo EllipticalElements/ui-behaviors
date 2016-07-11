@@ -107,14 +107,14 @@
                         //reset open state
                         this._data.set('open', false);
                         //bind the events
-                        this._menuEvents();
+                        this._touchMenuEvents();
                     }
                 }else{
                     if (mq.matches) {
                         //reset open state
                         this._data.set('open', false);
                         //remove navigation
-                        this._removeTouchNavigation(this.element);
+                        this._removeTouchNavigation();
                     }
                 }
             },
@@ -237,16 +237,7 @@
              *
              * @private
              */
-            _dispose:function(){
-                var input = this._data.get('input');
-                var touchInput = this._data.get('touchInput');
-                if (input) {
-                    this._unbindSearch(input);
-                }
-                if (touchInput) {
-                    this._unbindSearch(touchInput);
-                }
-
+            _navbarDispose:function(){
                 this._unbindMQListeners();
             },
 

@@ -16,24 +16,17 @@
             _createTouchNavigation: function (element, dataClass) {
                 this._data.set('input',null);
                 this._data.set('touchInput',null);
-                var self=this;
-                setTimeout(function(){
-                    self._createDrawer(element, dataClass);
-                    self._createTouchMenu(element);
-                },750);
+                this._createDrawer(element, dataClass);
+                this._createTouchMenu(element);
             },
 
             /**
              * remove touch navigation
-             * @param element
              * @private
              */
-            _removeTouchNavigation: function (element) {
+            _removeTouchNavigation: function () {
                 //unbind touch search
-                var touchInput=this._data.get('touchInput');
-                if (touchInput) {
-                    this._unbindSearch(touchInput);
-                }
+                this._unbindTouchSearch();
                 //remove drawer
                 this._removeDrawer();
                 //reset element
@@ -41,6 +34,7 @@
                     position: ''
                 });
                 this._data.set('navLocked',false);
+
             },
 
             /**
@@ -117,8 +111,6 @@
                 //add any linkable parent node to the child touch dropdown(it is then linkable within the child dropdown)
                 drawerMenu = this._methods.addParentNodesToChildDropDowns(drawerMenu, 'ui-dropdown');
 
-                /* ---attach search to drawerHeader----------------*/
-                this._appendSearch(drawerMenu,drawerHeader);
 
                 //add any menu items from plugin opts
                 var optsItems = this._methods.createMenuItemsFromArray(model);
@@ -166,19 +158,6 @@
                 return this._methods.filterMenuItems(items);
             },
 
-            _appendSearch:function(drawerMenu,drawerHeader){
-                /* first check in cloned menu items */
-                var self=this;
-                setTimeout(function(){
-                    var search=self.element.find('[role=search]');
-                    if(search[0]){
-                        var clone=search.clone();
-                        drawerHeader.append(clone);
-                    }
-                },1000);
-
-            },
-
             /**
              * append menu items from a model
              * @private
@@ -206,68 +185,6 @@
                 drawerMenu.append(items);
             },
 
-            /**
-             * pass an input to the search handler
-             * @returns {*}
-             * @private
-             */
-            _initSearchHandler:function(){
-                var searchSelector='ui-search';
-                var search_ =this.element.find(searchSelector);
-                if(search_[0]){
-                    /* desktop search box */
-                    var input=search_.find('input');
-                    this._data.set('input',input);
-                    /* setup handler for desktop */
-                    this._onSearch(input,'desktop');
-                    return search_;
-                }else{
-                    return null;
-                }
-            },
-
-            /**
-             * pass a touch input to the search handler
-             * @param search
-             * @param drawerHeader
-             * @private
-             */
-            _initTouchSearchHandler:function(search,drawerHeader){
-                /* touch search box */
-                var searchClone=search.clone();
-                var touchInput = searchClone.find('input');
-                if (touchInput[0]) {
-                    this._data.set('touchInput',touchInput);
-                    /* append touch search box */
-                    drawerHeader.append(searchClone);
-                    /* touch search handler */
-                    this._onSearch(touchInput,'touch');
-                }
-            },
-
-            /**
-             * search handler mediator
-             * @param input {object}
-             * @param device {string}
-             * @private
-             */
-            _onSearch: function (input,device) {
-                if(device==='desktop'){
-                    if(this._data.get('searchRegistered')){
-                        return false;
-                    } else{
-                        this._data.set('searchRegistered',true);
-                        this._onDesktopSearch(input)
-                    }
-
-                }else{
-                    if(this._data.get('touchSearchRegistered')){
-                        return false;
-                    } else {
-                        this._data.set('touchSearchRegistered',true);
-                    }
-                }
-            },
 
             _onDesktopSearch:function(input){
                 var eventTrigger=this._onEventTrigger.bind(this);
@@ -577,17 +494,31 @@
              * @param input {object}
              * @private
              */
-            _unbindSearch: function (input) {
+            _unbindInput: function (input) {
                 input.off('focus');
                 input.off('blur');
             },
 
+            _unbindTouchSearch:function(){
+                var input=this._data.get('touchSearchInput');
+                if(input[0]) this._unbindInput(input);
+            },
+
+            _unbindDesktopSearch:function(){
+                var input=this._data.get('input');
+                if(input[0]) this._unbindInput(input);
+            },
+
+            _unbindSearch:function(){
+                this._unbindDesktopSearch();
+                this._unbindTouchSearch();
+            },
 
             /**
              *
              * @private
              */
-            _dispose:function(){
+            _navigationDispose:function(){
                 this._unbindSearch();
             }
 

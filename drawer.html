@@ -19,6 +19,7 @@
                     return;
                 }
                 this._data.set('locked',true);
+                this._data.set('touchSearchInput',null);
                 //get reference to the container
                 var container=$('ui-container');
                 this._data.set('container',container);
@@ -62,7 +63,15 @@
                 }
                 var drawerHeader = $('<header></header>');
                 var touchHeader=this.element.find('touch-header');
-                if(touchHeader[0]) drawerHeader.append(touchHeader);
+                if(touchHeader[0]) {
+                    var clonedTouchHeader=touchHeader.clone();
+                    var input=clonedTouchHeader.find('ui-search>input');
+                    drawerHeader.append(clonedTouchHeader);
+                    if(input[0]) {
+                        this._data.set('touchSearchInput',input);
+                        this._onTouchSearch(input);
+                    }
+                }
 
                 //append header to drawer
                 drawer.append(drawerHeader);
