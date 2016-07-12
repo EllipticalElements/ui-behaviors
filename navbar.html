@@ -166,7 +166,7 @@
 
                 /* close the drawer */
                 this._hide();
-
+                console.log(this._location);
                 //if href, location redirect
                 if (typeof href != 'undefined' && href != '#') {
                     /* trigger location after the drawer has closed */
@@ -210,8 +210,8 @@
                     self._touchToggleDropdown($(event.target));
                 });
 
-                if(this.touchEvents){
-                    this._event(drawer,this._data.click,'touch-ui-menu>menu-item>a',function(event){
+                if(!this.disableTouchEvents){
+                    this._event(drawer,this._data.click,'touch-ui-menu>menu-item>a:not([data-ignore])',function(event){
                         self._onTouchMenuEvent(event);
                     });
                 }
