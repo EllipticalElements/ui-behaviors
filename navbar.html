@@ -86,7 +86,7 @@
              *
              * @private
              */
-            _onScrollTop:function(){
+            _onNavigationScrollTop:function(){
                 var self=this;
                 setTimeout(function () {
                     self._show();
@@ -252,7 +252,7 @@
              */
             show: function () {
                 var navScrollTop='navScrollTop' + this.eventNamespace;
-                this._scrollTop(0, navScrollTop);
+                this._onNavigationScrollTop(0, navScrollTop);
             },
 
             /**
