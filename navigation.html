@@ -86,7 +86,7 @@
 
                 //clone it
                 var clone = menu.clone();
-
+                clone.find('template').remove();
                 //extract items from clone
                 var items=this._extractMenuItems(clone);
 
@@ -127,7 +127,6 @@
 
                 //append menu to drawer
                 drawerSection.append(drawerMenu);
-
                 //prepend touch-section footer, if any
                 var touchSectionF=this.element.find('touch-section[footer]');
                 if(touchSectionF[0]){
@@ -148,12 +147,11 @@
              */
             _getMenu:function(element){
                 //find DOM element menus
-                return element.find('ui-menu').not('[touch-menu="false"]').add(element.find('[role="menu"]'));
-
+                return element.find('ui-menu').not('[exclude-menu]').add(element.find('[role="menu"]'));
             },
 
             _extractMenuItems:function(clone){
-                var excludeMenuItemSelector='[touch-menu-item="false"]';
+                var excludeMenuItemSelector='[exclude-menu-item]';
                 var items = clone.children().not(excludeMenuItemSelector).add(clone.find('[data-role="menu-item-dropdown"]'));
                 return this._methods.filterMenuItems(items);
             },
@@ -410,7 +408,7 @@
                 },
 
                 filterMenuItems:function(items){
-                    var exclude=items.find('[data-touch="false"]');
+                    var exclude=items.find('[exclude-menu-item]');
                     $.each(exclude,function(i,ele){
                         $(ele).remove();
                     });

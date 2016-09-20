@@ -119,6 +119,20 @@
                 }
             },
 
+            /**
+             *
+             */
+            _onRequestTouchMenuCreate:function(){
+              if (this._mq.touch) {
+                this._removeTouchNavigation();
+                this._createTouchNavigation(this.element, this.dataClass);
+                //reset open state
+                this._data.set('open', false);
+                //bind the events
+                this._touchMenuEvents();
+              }
+            },
+
 
             /**
              * element desktop events
