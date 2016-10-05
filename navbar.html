@@ -214,18 +214,18 @@
              * @private
              */
             _touchMenuEvents: function () {
+                var press=('ontouchend' in document) ? 'touchend' : 'click';
                 var self = this;
                 var drawer = this._data.get('drawer');
                 if (!drawer) {
                     return false;
                 }
-                var click=(this._device.touch) ? 'tap' : 'click';
-                this._event(drawer,click,'menu-item-dropdown:not(touch-ui-dropdown)',function(event){
+                this._event(drawer,press,'menu-item-dropdown:not(touch-ui-dropdown)',function(event){
                     self._touchToggleDropdown($(event.target));
                 });
 
                 if(!this.disableTouchEvents){
-                    this._event(drawer,this._data.click,'touch-ui-menu>menu-item>a:not([data-ignore])',function(event){
+                    this._event(drawer,press,'touch-ui-menu>menu-item>a:not([data-ignore])',function(event){
                         self._onTouchMenuEvent(event);
                     });
                 }

@@ -86,6 +86,7 @@
 
 
             _initialize: function(){
+                this._setFingerEvents();
                 this._initialization();
                 this._onInitialization();
             },
@@ -280,7 +281,7 @@
             _triggerPreloadEvent: function (evtData) {
                 var self = this;
                 setTimeout(function () {
-                    self._onEventTrigger('preloaded', evtData);
+                    self._fireEvent('preloaded', evtData);
                 }, 10);
             },
 
@@ -294,22 +295,26 @@
                 var self = this;
                 var contentToSlide=this._contentToSlide();
                 if (contentToSlide) { //if the left offset position of last-child is greater than container width, we can do a next slide
-
                     var slideDistanceFactor = this._slideDistanceFactor('first');
                     iteration++;
                     this._data.set('iteration',iteration);
-                    var marginLeft = (-1) * iteration * slideDistanceFactor + 'px';
+                    var marginLeft = (-1) * iteration * slideDistanceFactor;
+                    var offset=parseInt(this._currentOffset);
+                    marginLeft=marginLeft - offset;
+                    marginLeft=marginLeft - this._runningOffset;
+                    this._runningOffset=this._runningOffset + offset;
+                    marginLeft=marginLeft.toString() + 'px';
                     var evtData = {
                         slideIndex: iteration
                     };
-                    this._onEventTrigger('sliding', evtData);
+                    this._fireEvent('sliding', evtData);
 
                     this._transition(ele, {
                         'margin-left': marginLeft,
                         duration: this.duration,
                         easing: this.easing
                     }, function () {
-
+                        self._swipeExecuting=false;
                         /* remove any disabled css markup from nav */
                         var prevNav=self._data.get('prevNav');
                         var nextNav=self._data.get('nextNav');
@@ -317,7 +322,7 @@
                         /* check if nextNav needs to be disabled */
 
                         if (!self._contentToSlide()) self._hideNav(nextNav);
-                        self._onEventTrigger('slide', evtData);
+                        self._fireEvent('slide', evtData);
                     });
                 }else{
                     var intervalId=this._data.get('intervalId');
@@ -348,23 +353,28 @@
                     var slideDistanceFactor = this._slideDistanceFactor('first');
                     iteration--;
                     this._data.set('iteration',iteration);
-                    var marginLeft = (-1) * iteration * slideDistanceFactor + 'px';
-                    var evtData = {
+                    var marginLeft = (-1) * iteration * slideDistanceFactor;
+                     var offset=parseInt(this._currentOffset);
+                     this._runningOffset = this._runningOffset + offset;
+                     marginLeft= marginLeft - this._runningOffset;
+                     marginLeft=marginLeft.toString()+ 'px';
+                     var evtData = {
                         slideIndex: iteration
-                    };
-                    this._onEventTrigger('sliding', evtData);
+                     };
+                    this._fireEvent('sliding', evtData);
                     this._transition(ele, {
                         'margin-left': marginLeft,
                         duration: this.duration,
                         easing: this.easing
                     }, function () {
+                        self._swipeExecuting=false;
                         /* remove any disabled css markup from nav */
                         var prevNav=self._data.get('prevNav');
                         var nextNav=self._data.get('nextNav');
                         self._showNav(nextNav);
                         /* check if prevNav needs to be disabled */
                         if (iteration === 0) self._hideNav(prevNav);
-                        self._onEventTrigger('slide', evtData);
+                        self._fireEvent('slide', evtData);
                     });
                 }
             },
@@ -423,7 +433,7 @@
                 },10);
 
 
-                this._onEventTrigger('slide', evtData);
+                this._fireEvent('slide', evtData);
             },
 
             _fadeTransition: function (currentSlide, nextSlide, duration, evtData) {
@@ -436,7 +446,7 @@
                         opacity: 1,
                         duration: duration
                     });
-                    self._onEventTrigger('slide', evtData);
+                    self._fireEvent('slide', evtData);
                 });
             },
 
@@ -641,13 +651,27 @@
                     var ele = this.element;
                     var item;
                     if(child==='last' || child==='first') item = ele.find(this._data.get('item') + ':' + child + '-child');
-                    else item = ele.find(this._data.get('item') + ':' + child + '-child');
+                    else item = ele.find(this._data.get('item') + ':nth-child(' + child + ')');
                     var width = item.outerWidth();
                     var margin = item.css('margin-right');
                     return parseInt(width) + parseInt(margin, 10);
                 }
             },
 
+
+            _isFirstSlide:function(){
+              var iteration = this._data.get('iteration');
+              iteration = (iteration !== undefined) ? (iteration) : 0;
+              return (iteration < 1);
+            },
+
+            _isLastSlide:function(){
+              var iteration = this._data.get('iteration');
+              iteration = (iteration !== undefined) ? (iteration) : 0;
+              var size = this._getSize();
+              iteration+=1;
+              return(iteration >=size);
+            },
 
             /**
              * event trigger handler for selected slide
@@ -662,7 +686,7 @@
                     url: item.attr(url),
                     target: item
                 };
-                this._onEventTrigger('selected', evtData);
+                this._fireEvent('selected', evtData);
             },
 
 
@@ -677,14 +701,14 @@
                     this._clearTimeout();
                     this.auto = false;
                     if (animation === 'fade') {  /* fade */
-                        if(iteration===undefined){
+                        if(typeof iteration !== 'number'){
                             iteration= this._data.get('iteration');
                             iteration = (iteration < this._data.get('size') - 1) ? (iteration + 1) : 0;
                         }
                         this._FadeSlide(iteration);
                     } else {
                         /* slide mode */
-                        if (iteration !== undefined) {
+                        if (typeof iteration === 'number') {
                             iteration--;
                             this._data.set('iteration',iteration);
                         }
@@ -704,14 +728,14 @@
                     this._clearTimeout();
                     this.auto = false;
                     if (animation === 'fade') {  /* fade */
-                        if (iteration === undefined) {
+                        if (typeof iteration !== 'number') {
                             iteration = this._data.get('iteration');
                             iteration = (iteration > 0) ? (iteration - 1) : this._data.get('size') - 1;
                         }
                         this._FadeSlide(iteration);
                     } else {
                         /* slide mode */
-                        if (iteration !== undefined) {
+                        if (typeof iteration === 'number') {
                             iteration++;
                             this._data.set('iteration',iteration);
                         }
@@ -763,6 +787,13 @@
                     this._clearTimeout();
                     this.auto = false;
                     this._FadeSlide(index);
+                }else{
+                  this._clearTimeout();
+                  this.auto = false;
+                  var currentIndex = this._data.get('iteration');
+                  if (index > currentIndex) this._onNext(index);
+                  else this._onPrev(index);
+                  this._updateIndicatorNav(index);
                 }
             },
 
@@ -789,19 +820,39 @@
             /**
              * touch event handler
              * @param event {Object}
+             * @param data {Object}
              * @private
              */
-            _onGesture: function (event) {
-                // disable browser scrolling
-
+            _onGesture: function (event,data) {
+              if(this.suspended) return;
+              var animation = this.animation;
+              var distance;
+              if(data) distance=data.distance;
                 switch (event.type) {
                     case 'swiperight':
                         event.preventDefault();
-                        if (this._data.get('readyState')) this._onPrev();
+                        if(this._isFirstSlide()){
+                          this._resetToRunningOffsetPosition();
+                          return;
+                        }
+                        if (this._data.get('readyState')) {
+                          this._swipeExecuting=true;
+                          this._onPrev();
+                          this._currentOffset=0;
+                        }
                         break;
                     case 'swipeleft':
                         event.preventDefault();
-                        if (this._data.get('readyState')) this._onNext();
+                        if(this._isLastSlide()){
+                          this._swipeExecuting=true;
+                          this._resetToOffsetPositionForLastItem();
+                          return;
+                        }
+                        if (this._data.get('readyState')) {
+                            this._swipeExecuting=true;
+                            this._onNext();
+                            this._currentOffset=0;
+                        }
                         break;
                     case 'tap':
                         event.preventDefault();
@@ -813,21 +864,108 @@
                         break;
 
                     case 'release':
-
                         break;
-
                 }
             },
 
+            _onFingerDrag:function(event,data){
+              if(this.suspended) return;
+              var animation = this.animation;
+              if (animation === 'multi-slide' || animation==='fade') return;
+              var self=this;
+              var ele = this._data.get('itemsContainer');
+              ele=ele[0];
+              setTimeout(function(){
+                if (!self._swipeExecuting){
+                  var x=-1*data.distance.x;
+                  self._currentOffset=x;
+                  x+=parseInt(self._runningOffset);
+                  self._elementTranslate(ele,x);
+                }
+              },150);
+            },
+
+          _onFingerEnd:function(event,data){
+            //var animation=this.animation;
+            //if (animation === 'multi-slide' || animation==='fade') return;
+            //this._resetToRunningOffsetPosition();
+          },
+
+          _getItemsWidth:function(){
+            if(this._itemsWidth>0) return this._itemsWidth;
+            else{
+              var width=0;
+              var length=this._getSize();
+              for(var i=0;i<length;i++){
+                var child=i+1;
+                width+=this._slideDistanceFactor(child);
+              }
+              return width;
+            }
+          },
+
+          _resetToInitialPosition:function(){
+            var ele = this._data.get('itemsContainer');
+            ele.attr('style','');
+            this._runningOffset=0;
+            this._currentOffset=0;
+            this._swipeExecuting=false;
+            this._data.set('iteration',0);
+            this._updateIndicatorNav(0);
+          },
+
+          _resetToLastPosition:function(){
+            var ele = this._data.get('itemsContainer');
+            var lastWidth=this._slideDistanceFactor('last');
+            var width=this._getItemsWidth();
+            width=width-lastWidth;
+            var style='margin-left:-' + width + 'px';
+            ele.attr('style',style);
+            this._runningOffset=0;
+            this._currentOffset=0;
+            this._swipeExecuting=false;
+            var size=this._getSize();
+            var index=size-1;
+            this._data.set('iteration',index);
+            this._updateIndicatorNav(index);
+          },
+
+          _resetToRunningOffsetPosition:function(){
+            var animation = this.animation;
+            if (animation === 'multi-slide' || animation==='fade') return;
+            var ele = this._data.get('itemsContainer');
+            ele=ele[0];
+            var x=this._runningOffset;
+            this._elementTranslate(ele,x);
+          },
+
+          _resetToOffsetPositionForLastItem:function(){
+            var animation = this.animation;
+            if (animation === 'multi-slide' || animation==='fade') return;
+            var self=this;
+            var ele = this._data.get('itemsContainer');
+            ele=ele[0];
+            var x=this._runningOffset;
+            this._elementTranslate(ele,x);
+            setTimeout(function(){
+              self._swipeExecuting=false;
+            },150);
+          },
+
+
+          _elementTranslate:function(ele,x){
+            ele.style.webkitTransform = "translate3d(" + x + "px, 0,0)";
+          },
 
             /**
              * element events
              * @private
              */
             __events: function () {
+                var animation = this.animation;
+                var isTouch = this._device.touch;
                 var element = this.element;
                 var orientationEvent = this._device.orientationEvent;
-                var self = this;
                 var next = this._data.get('nextNav');
                 var prev = this._data.get('prevNav');
                 if (this._data.get('size') < 1) {
@@ -841,28 +979,18 @@
 
                 if(next===undefined || prev===undefined) return;
 
-                this._event(next, click, function (event) {
-                    self._onNext();
-                });
+                this._event(next, click, this._onNext.bind(this));
 
-                this._event(prev, click, function (event) {
-                    self._onPrev();
-                });
-
-                var isTouch = this._device.touch;
-
+                this._event(prev, click, this._onPrev.bind(this));
 
                 /* resize */
-                this._event($(window), orientationEvent, function (event) {
-                    self._onOrientationChange();
-                });
+                this._event($(window), orientationEvent, this._onOrientationChange.bind(this));
 
                 /* touch swipe event handling */
                 if (isTouch) {
-                    this._event(element, 'swipeleft swiperight tap', function (event) {
-                        self._onGesture(event);
-                    });
-
+                  this._event(element, 'swipeleft swiperight tap', this._onGesture.bind(this));
+                  this._event(element, 'fingerdrag', this._onFingerDrag.bind(this));
+                  this._event(element, 'fingerend', this._onFingerEnd.bind(this));
                 }
             },
 
@@ -884,7 +1012,13 @@
 
             },
 
+            _fireEvent:function(evt,data){
+                data.id=this.id;
+                this.fire('ui-carousel-' + evt, data);
+            },
+
             _dispose:function(){
+                this._killFingerEvents();
                 var intervalId=this._data.get('intervalId');
                 var timeoutId=this._data.get('timeoutId');
                 if(intervalId){
@@ -926,8 +1060,17 @@
              * @public api
              */
             slide: function (direction) {
+                if(this.suspended) return;
                 if (typeof direction === 'number') this._onSlide(direction);
                 else (direction === 'next') ? this._onNext() : this._onPrev();
+            },
+
+            slideFirst:function(){
+              this._resetToInitialPosition();
+            },
+
+            slideLast:function(){
+              this._resetToLastPosition();
             },
 
             /**
@@ -946,6 +1089,14 @@
 
             pause:function(){
                 this._pause();
+            },
+
+            suspend:function(){
+                this.suspended=true;
+            },
+
+            resume:function(){
+                this.suspended=false;
             },
 
             runInit:function(){
