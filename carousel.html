@@ -582,6 +582,8 @@
                 var next = outerContainer.find(this.nextNavSelector);
                 var prev = outerContainer.find(this.prevNavSelector);
                 if(this._enableNextNav()) this._showNav(next);
+                else this._hideNav(next);
+                this._hideNav(prev);
                 this._data.set('nextNav',next);
                 this._data.set('prevNav',prev);
             },
@@ -1101,6 +1103,20 @@
 
             runInit:function(){
                 this._initCarousel();
+            },
+
+            reinit:function(){
+              this._initialization();
+              this._initNav();
+            },
+
+            setItems:function(html){
+              var self=this;
+              this.$.carouselItems.innerHTML=html;
+              setTimeout(function(){
+                self._initialization();
+                self._initNav();
+              },500);
             }
         };
     }));
