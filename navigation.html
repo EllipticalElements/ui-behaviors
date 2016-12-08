@@ -89,28 +89,28 @@
                 clone.find('template').remove();
                 //extract items from clone
                 var items=this._extractMenuItems(clone);
-
+        
                 ///---handle dropdown buttons------
                 /* unwrap button dropdowns */
                 items.find('ui-button-dropdown').contents().unwrap();
-
+                
                 //if menu-item tag has dropdowns, replaceWith menu-item-dropdown
                 items=this._methods.replaceWithMenuItemTags(items);
+                
                 ///--end handling of dropdown buttons---------
 
                 //touchify the ui-dropdowns
                 this._methods.touchifyUIDropdowns(items);
-
+               
 
                 //iconify menu items
                 this._methods.iconifyTouchMenuItems(items);
-
+                
                 //append to menu
                 drawerMenu.append(items);
 
                 //add any linkable parent node to the child touch dropdown(it is then linkable within the child dropdown)
-                drawerMenu = this._methods.addParentNodesToChildDropDowns(drawerMenu, 'ui-dropdown');
-
+                if(this.touchParentNodeLink) drawerMenu = this._methods.addParentNodesToChildDropDowns(drawerMenu, 'ui-dropdown');
 
                 //add any menu items from plugin opts
                 var optsItems = this._methods.createMenuItemsFromArray(model);
