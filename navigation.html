@@ -499,7 +499,7 @@
 
             _unbindTouchSearch:function(){
                 var input=this._data.get('touchSearchInput');
-                if(input[0]) this._unbindInput(input);
+                if(input && input[0]) this._unbindInput(input);
             },
 
             _unbindDesktopSearch:function(){
