@@ -98,7 +98,7 @@
             _initialization: function () {
                 var element = this.element;
                 //get size=total number of slides
-                this._data.set('size',element.find(this._data.get('item')).size());
+                this._data.set('size',element.find(this._data.get('item')).length);
                 //get the current slide=1st element
                 this._data.set('currentSlide',element.find(this._data.get('item') + ':first'));
                 this._data.set('iteration',0);
@@ -338,7 +338,7 @@
 
             _getSize: function () {
                 var items = this._getCarouselItems();
-                return items.size();
+                return items.length;
             },
 
             /**
@@ -756,7 +756,7 @@
              * @private
              */
             _enableNav: function () {
-                var size=this.element.find(this._data.item).size();
+                var size=this.element.find(this._data.item).length;
                 this._data.set('size',size);
                 var next = this._data.get('nextNav');
                 var prev = this._data.get('prevNav');
