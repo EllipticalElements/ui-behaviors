@@ -178,7 +178,7 @@
                 } else {
                     this._showSection(tab, id);
                 }
-                this._onEventTrigger('selected', eventData);
+                this.fire('ui-tabs-selected', eventData);
 
             },
 
@@ -473,10 +473,10 @@
             _getTabByDataId: function (id) {
                 var tab = null;
                 var tabs = this._data.get('tabs');
-                var dataTab = tabs.find('a').filter('[href=#"' + id + '"]');
+                var dataTab = tabs.find('a[href="#' + id + '"]');
 
                 if (dataTab.length > 0) {
-                    tab = $(dataTab[0]).parent('li');
+                    tab = $(dataTab[0]).parent('tab-item');
                 }
                 return tab;
             },
@@ -507,7 +507,7 @@
                 data.relatedIndex = this._data.get('activeIndex');
                 data.relatedTarget = this._data.get('activeTab');
 
-                this._onEventTrigger('selected', data);
+                this.fire('ui-tabs-selected', data);
             },
 
             /**
